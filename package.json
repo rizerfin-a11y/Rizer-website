@@ -1,0 +1,13 @@
+{
+    "name": "smart-productivity-planner",
+    "version": "1.0.0",
+    "description": "Smart Productivity Planner with Google Calendar Integration",
+    "main": "index.html",
+    "scripts": {
+        "dev": "npx -y live-server .",
+        "start": "npx -y live-server ."
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC"
+}
