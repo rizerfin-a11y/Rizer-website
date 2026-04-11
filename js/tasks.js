@@ -43,7 +43,7 @@ function renderTaskItem(task, mini = false) {
   <div class="task-meta">
     ${priorityBadge(task.priority)}
     ${isOverdue ? `<span class="badge badge-overdue">Overdue</span>` : ''}
-    ${task.deadline ? `<span class="task-time">📅 ${formatDate(task.deadline)}</span>` : ''}
+    ${task.deadline ? `<span class="task-time">📅 ${formatTimeRange(task.deadline, task.endTime)}</span>` : ''}
     ${task.estTime ? `<span class="task-time">⏱ ${task.estTime}m</span>` : ''}
     ${(task.tags || []).map(tag => `<span class="badge badge-tag">${escHtml(tag)}</span>`).join('')}
     ${task.rescheduled > 0 ? `<span style="font-size:11px;color:var(--text3)">↩️ ${task.rescheduled}×</span>` : ''}

@@ -79,6 +79,27 @@ function formatDate(d) {
   return dateObj.toLocaleDateString('en-US', options);
 }
 
+/** Format a time range e.g. "Apr 11, 12:00 PM – 1:00 PM" */
+function formatTimeRange(start, end) {
+  if (!start) return '';
+  const hasStartT = start.includes('T');
+  const hasEndT = end && end.includes('T');
+
+  if (!hasStartT) return formatDate(start);
+
+  const startDt = new Date(start);
+  const dateStr = startDt.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  const startStr = startDt.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+
+  if (hasEndT) {
+    const endDt = new Date(end);
+    const endStr = endDt.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+    return `${dateStr}, ${startStr} – ${endStr}`;
+  }
+
+  return `${dateStr}, ${startStr}`;
+}
+
 /** Priority badge HTML */
 function priorityBadge(p) {
   return `<span class="badge badge-${p}">${p}</span>`;
