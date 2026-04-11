@@ -1,79 +1,89 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Smart Productivity Planner</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css">
-<script src="https://accounts.google.com/gsi/client" async defer></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart Productivity Planner</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
+
 <body>
-<div class="app" id="app">
-  <aside class="sidebar" id="sidebar">
-    <div class="logo">
-      <div class="logo-icon">📊</div>
-      <span class="logo-text">SmartPlan</span>
-    </div>
-    <nav class="nav">
-      <div class="nav-section">Main</div>
-      <div class="nav-item active" onclick="navigate('dashboard')" id="nav-dashboard">
-        <span class="nav-icon">🏠</span><span class="nav-label">Dashboard</span>
+  <div class="app" id="app">
+    <aside class="sidebar" id="sidebar">
+      <div class="logo">
+        <div class="logo-icon">📊</div>
+        <span class="logo-text">SmartPlan</span>
       </div>
-      <div class="nav-item" onclick="navigate('tasks')" id="nav-tasks">
-        <span class="nav-icon">✅</span><span class="nav-label">Tasks</span>
+      <nav class="nav">
+        <div class="nav-section">Main</div>
+        <div class="nav-item active" onclick="navigate('dashboard')" id="nav-dashboard">
+          <span class="nav-icon">🏠</span><span class="nav-label">Dashboard</span>
+        </div>
+        <div class="nav-item" onclick="navigate('tasks')" id="nav-tasks">
+          <span class="nav-icon">✅</span><span class="nav-label">Tasks</span>
+        </div>
+        <div class="nav-item" onclick="navigate('calendar')" id="nav-calendar">
+          <span class="nav-icon">📅</span><span class="nav-label">Calendar</span>
+        </div>
+        <div class="nav-section">Insights</div>
+        <div class="nav-item" onclick="navigate('analytics')" id="nav-analytics">
+          <span class="nav-icon">📈</span><span class="nav-label">Analytics</span>
+        </div>
+        <div class="nav-item" onclick="navigate('goals')" id="nav-goals">
+          <span class="nav-icon">🎯</span><span class="nav-label">Goals</span>
+        </div>
+        <div class="nav-item" onclick="navigate('history')" id="nav-history">
+          <span class="nav-icon">🕐</span><span class="nav-label">History</span>
+        </div>
+        <div class="nav-section">Settings</div>
+        <div class="nav-item" onclick="navigate('settings')" id="nav-settings">
+          <span class="nav-icon">⚙️</span><span class="nav-label">Settings</span>
+        </div>
+      </nav>
+      <div style="padding:12px">
+        <div class="streak-badge" style="margin-bottom: 12px;">🔥 <span id="sidebar-streak">0</span>d streak</div>
+        <div
+          style="display:flex;gap:12px;font-size:10px;color:var(--text3);border-top:1px solid var(--border1);padding-top:12px">
+          <a href="privacy.html" style="color:inherit;text-decoration:none">Privacy Policy</a>
+          <a href="terms.html" style="color:inherit;text-decoration:none">Terms</a>
+        </div>
       </div>
-      <div class="nav-item" onclick="navigate('calendar')" id="nav-calendar">
-        <span class="nav-icon">📅</span><span class="nav-label">Calendar</span>
-      </div>
-      <div class="nav-section">Insights</div>
-      <div class="nav-item" onclick="navigate('analytics')" id="nav-analytics">
-        <span class="nav-icon">📈</span><span class="nav-label">Analytics</span>
-      </div>
-      <div class="nav-item" onclick="navigate('goals')" id="nav-goals">
-        <span class="nav-icon">🎯</span><span class="nav-label">Goals</span>
-      </div>
-      <div class="nav-item" onclick="navigate('history')" id="nav-history">
-        <span class="nav-icon">🕐</span><span class="nav-label">History</span>
-      </div>
-      <div class="nav-section">Settings</div>
-      <div class="nav-item" onclick="navigate('settings')" id="nav-settings">
-        <span class="nav-icon">⚙️</span><span class="nav-label">Settings</span>
-      </div>
-    </nav>
-    <div style="padding:12px">
-      <div class="streak-badge">🔥 <span id="sidebar-streak">0</span>d streak</div>
-    </div>
-  </aside>
+    </aside>
 
-  <div class="main">
-    <div class="topbar">
-      <div style="display:flex;align-items:center;gap:12px">
-        <span style="font-size:13px;color:var(--text2)" id="top-date"></span>
-        <div class="streak-badge" id="top-streak">🔥 0 day streak</div>
+    <div class="main">
+      <div class="topbar">
+        <div style="display:flex;align-items:center;gap:12px">
+          <span style="font-size:13px;color:var(--text2)" id="top-date"></span>
+          <div class="streak-badge" id="top-streak">🔥 0 day streak</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <button class="btn btn-ghost btn-sm" onclick="showNotifications()">🔔</button>
+          <button class="btn btn-primary btn-sm" onclick="openAddTask()">+ Add Task</button>
+          <div class="toggle-theme" onclick="toggleTheme()" title="Toggle theme" id="theme-toggle"></div>
+        </div>
       </div>
-      <div style="display:flex;align-items:center;gap:10px">
-        <button class="btn btn-ghost btn-sm" onclick="showNotifications()">🔔</button>
-        <button class="btn btn-primary btn-sm" onclick="openAddTask()">+ Add Task</button>
-        <div class="toggle-theme" onclick="toggleTheme()" title="Toggle theme" id="theme-toggle"></div>
-      </div>
+      <div class="content" id="page-content"></div>
     </div>
-    <div class="content" id="page-content"></div>
   </div>
-</div>
 
-<!-- Modal Overlay -->
-<div class="modal-overlay" id="modal" style="display:none">
-  <div class="modal" id="modal-content"></div>
-</div>
+  <!-- Modal Overlay -->
+  <div class="modal-overlay" id="modal" style="display:none">
+    <div class="modal" id="modal-content"></div>
+  </div>
 
-<script src="js/state.js"></script>
-<script src="js/helpers.js"></script>
-<script src="js/gcal.js"></script>
-<script src="js/tasks.js"></script>
-<script src="js/pages.js"></script>
-<script src="js/charts.js"></script>
-<script src="js/app.js"></script>
+  <script src="js/state.js"></script>
+  <script src="js/helpers.js"></script>
+  <script src="js/gcal.js"></script>
+  <script src="js/tasks.js"></script>
+  <script src="js/pages.js"></script>
+  <script src="js/charts.js"></script>
+  <script src="js/app.js"></script>
 </body>
+
 </html>
