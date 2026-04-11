@@ -103,7 +103,7 @@ async function addToGCal(task) {
 
   const body = {
     summary: task.title,
-    description: `[SmartPlan]\n${task.desc || ''}\nPriority: ${task.priority}`,
+    description: `[Traker]\n${task.desc || ''}\nPriority: ${task.priority}`,
     start,
     end,
     colorId: colorMap[task.priority] || '2'
