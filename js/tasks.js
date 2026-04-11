@@ -97,12 +97,12 @@ function openAddTask(dateOverride) {
 
 <div class="form-row">
   <div class="form-group">
-    <label class="form-label">Task Date</label>
-    <input class="form-input" id="t-date" type="date" value="${dt}">
+    <label class="form-label">Start Time</label>
+    <input class="form-input" id="t-deadline" type="datetime-local" value="${dt}T12:00">
   </div>
   <div class="form-group">
-    <label class="form-label">Deadline (with time)</label>
-    <input class="form-input" id="t-deadline" type="datetime-local" value="${dt}T12:00">
+    <label class="form-label">End Time (optional)</label>
+    <input class="form-input" id="t-end" type="datetime-local" value="${dt}T13:00">
   </div>
 </div>
 
@@ -164,12 +164,12 @@ function openEditTask(id) {
 
 <div class="form-row">
   <div class="form-group">
-    <label class="form-label">Task Date</label>
-    <input class="form-input" id="t-date" type="date" value="${t.date}">
+    <label class="form-label">Start Time</label>
+    <input class="form-input" id="t-deadline" type="datetime-local" value="${t.deadline || (t.date + 'T12:00')}">
   </div>
   <div class="form-group">
-    <label class="form-label">Deadline (with time)</label>
-    <input class="form-input" id="t-deadline" type="datetime-local" value="${t.deadline || (t.date + 'T12:00')}">
+    <label class="form-label">End Time</label>
+    <input class="form-input" id="t-end" type="datetime-local" value="${t.endTime || ''}">
   </div>
 </div>
 
@@ -212,8 +212,9 @@ async function saveTask(editId) {
     desc: document.getElementById('t-desc')?.value.trim() || '',
     priority: document.getElementById('t-priority')?.value || 'medium',
     estTime: parseInt(document.getElementById('t-time')?.value) || 0,
-    date: document.getElementById('t-date')?.value || today(),
+    date: (document.getElementById('t-deadline')?.value || today()).split('T')[0],
     deadline: document.getElementById('t-deadline')?.value || '',
+    endTime: document.getElementById('t-end')?.value || '',
     tags: (document.getElementById('t-tags')?.value || '')
       .split(',').map(s => s.trim()).filter(Boolean),
     progress: editId ? (parseInt(document.getElementById('t-progress')?.value) || 0) : 0,
@@ -226,6 +227,9 @@ async function saveTask(editId) {
 
   if (editId) {
     state.tasks = state.tasks.map(t => t.id === editId ? task : t);
+    if (state.gcalConnected && task.gcalEventId) {
+      await updateGCalEvent(task);
+    }
     notify('Task updated!', 'success');
   } else {
     state.tasks.push(task);

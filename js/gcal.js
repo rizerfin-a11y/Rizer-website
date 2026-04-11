@@ -89,9 +89,11 @@ async function addToGCal(task) {
 
   const start = hasTime ? { dateTime: `${dateStr}:00`, timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone } : { date: dateStr };
 
-  // End time is start time + 1 hour if time is provided
+  // End time is user-defined OR start time + 1 hour
   let end;
-  if (hasTime) {
+  if (task.endTime && task.endTime.includes('T')) {
+    end = { dateTime: `${task.endTime}:00`, timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone };
+  } else if (hasTime) {
     const endDt = new Date(dateStr);
     endDt.setHours(endDt.getHours() + 1);
     end = { dateTime: endDt.toISOString().replace('.000Z', 'Z'), timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone };
@@ -144,9 +146,25 @@ async function addToGCal(task) {
 async function updateGCalEvent(task) {
   if (!state.gcalToken || !task.gcalEventId) return;
 
+  const hasTime = task.deadline?.includes('T');
+  const start = hasTime ? { dateTime: `${task.deadline}:00`, timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone } : { date: (task.deadline || task.date) };
+
+  let end;
+  if (task.endTime && task.endTime.includes('T')) {
+    end = { dateTime: `${task.endTime}:00`, timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone };
+  } else if (hasTime) {
+    const endDt = new Date(task.deadline);
+    endDt.setHours(endDt.getHours() + 1);
+    end = { dateTime: endDt.toISOString().replace('.000Z', 'Z'), timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone };
+  } else {
+    end = { date: (task.deadline || task.date) };
+  }
+
   const patch = {
     summary: task.completed ? `✓ ${task.title}` : task.title,
-    status: task.completed ? 'cancelled' : 'confirmed'
+    status: task.completed ? 'cancelled' : 'confirmed',
+    start,
+    end
   };
 
   try {
