@@ -7,6 +7,12 @@
 ────────────────────────────────────────────── */
 
 function navigate(page) {
+  if (page === 'settings' && state.isGuest) {
+    if (typeof handleAddTaskClick === 'function') {
+      handleAddTaskClick();
+      return;
+    }
+  }
   state.currentPage = page;
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   const el = document.getElementById('nav-' + page);
@@ -101,7 +107,7 @@ ${!state.gcalToken ? `
       <h3 style="margin-bottom: 6px;">Sync with Google Calendar</h3>
       <p style="font-size: 13px; opacity: 0.9;">Automatically add your tasks to Google Calendar and stay organized across devices.</p>
     </div>
-    <button class="btn" style="background: white; color: #4285f4; font-weight: 600;" onclick="authorizeGCal()">
+    <button class="btn" style="background: white; color: #4285f4; font-weight: 600;" onclick="handleAddTaskClick()">
       Connect Now
     </button>
   </div>
@@ -152,7 +158,7 @@ ${!state.gcalToken ? `
       ? `<div class="empty-state">
            <div class="empty-icon">📋</div>
            <p>No tasks for today</p>
-           <button class="btn btn-primary btn-sm" onclick="openAddTask()" style="margin-top:8px">Add task</button>
+           <button class="btn btn-primary btn-sm" onclick="handleAddTaskClick()" style="margin-top:8px">Add task</button>
          </div>`
       : tt.slice(0, 4).map(t => renderTaskItem(t, true)).join('')}
   </div>
@@ -229,7 +235,7 @@ function renderTasksPage() {
   return `
 <div class="section-header">
   <h1 style="font-size:22px;font-weight:700">Tasks</h1>
-  <button class="btn btn-primary btn-sm" onclick="openAddTask()">+ Add Task</button>
+  <button class="btn btn-primary btn-sm" onclick="handleAddTaskClick()">+ Add Task</button>
 </div>
 
 <div class="tabs" style="margin-bottom:20px;width:fit-content">
@@ -255,7 +261,7 @@ function renderTasksPage() {
       ? `<div class="empty-state">
          <div class="empty-icon">📋</div>
          <p>No tasks here</p>
-         <button class="btn btn-primary btn-sm" onclick="openAddTask()" style="margin-top:8px">+ Add Task</button>
+         <button class="btn btn-primary btn-sm" onclick="handleAddTaskClick()" style="margin-top:8px">+ Add Task</button>
        </div>`
       : filtered.map(t => renderTaskItem(t, false)).join('')}
 </div>`;
@@ -310,7 +316,7 @@ function renderCalendar() {
   return `
 <div class="section-header">
   <h1 style="font-size:22px;font-weight:700">Calendar Planner</h1>
-  <button class="btn btn-primary btn-sm" onclick="openAddTask('${selDate}')">
+  <button class="btn btn-primary btn-sm" onclick="handleAddTaskClick()">
     + Plan ${formatDate(selDate)}
   </button>
 </div>
@@ -359,7 +365,7 @@ ${state.gcalConnected ? `
       ? `<div class="empty-state">
            <div class="empty-icon">📋</div>
            <p>No tasks for this day</p>
-           <button class="btn btn-primary btn-sm" onclick="openAddTask('${selDate}')" style="margin-top:8px">
+           <button class="btn btn-primary btn-sm" onclick="handleAddTaskClick()" style="margin-top:8px">
              Plan this day
            </button>
          </div>`
@@ -515,7 +521,7 @@ function renderGoals() {
   return `
 <div class="section-header">
   <h1 style="font-size:22px;font-weight:700">Goals & Achievements</h1>
-  <button class="btn btn-primary btn-sm" onclick="openAddGoal()">+ Set Goal</button>
+  <button class="btn btn-primary btn-sm" onclick="handleAddTaskClick()">+ Set Goal</button>
 </div>
 
 <div class="grid-2" style="margin-bottom:20px">
