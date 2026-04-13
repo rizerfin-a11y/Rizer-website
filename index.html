@@ -50,7 +50,7 @@
         what truly matters.
       </p>
       <div class="animate-fade delay-2">
-        <button class="btn-premium btn-primary" onclick="enterApp(false)">Start for free</button>
+        <button class="btn-premium btn-primary" onclick="authorizeGCal()">Start for free</button>
         <button class="btn-premium btn-glass" onclick="enterApp(true)">Try as Guest</button>
       </div>
 
@@ -222,12 +222,12 @@
           </div>
         </div>
       `;
-      openModal(content);
+      showModal(content);
     }
 
     function handleAddTaskClick() {
       if (state.isGuest) {
-        openModal(`
+        showModal(`
           <div style="text-align:center; padding:20px;">
             <h2 style="margin-bottom:16px;">Create an account to add tasks</h2>
             <p style="margin-bottom:24px; color:var(--text-secondary);">Guests can only view features. Sign in with Google to start tracking your own productivity.</p>
