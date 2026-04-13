@@ -18,6 +18,12 @@ function renderPage() {
   // Destroy any existing Chart.js instances before re-rendering
   Chart.helpers?.each(Chart.instances, c => c.destroy());
 
+  // Update top login button
+  const topBtn = document.getElementById('gcal-top-btn');
+  if (topBtn) {
+    topBtn.style.display = state.gcalConnected ? 'none' : 'flex';
+  }
+
   const c = document.getElementById('page-content');
   switch (state.currentPage) {
     case 'dashboard': c.innerHTML = renderDashboard(); postRenderDashboard(); break;

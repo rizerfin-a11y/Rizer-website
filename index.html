@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Traker - Smart Productivity Planner</title>
+  <title>Rizer - Smart Productivity Planner</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
   <link
     href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap"
@@ -18,7 +18,7 @@
     <aside class="sidebar" id="sidebar">
       <div class="logo">
         <div class="logo-icon">📊</div>
-        <span class="logo-text">Traker</span>
+        <span class="logo-text">Rizer</span>
       </div>
       <nav class="nav">
         <div class="nav-section">Main</div>
@@ -63,6 +63,8 @@
           <div class="streak-badge" id="top-streak">🔥 0 day streak</div>
         </div>
         <div style="display:flex;align-items:center;gap:10px">
+          <button id="gcal-top-btn" class="btn btn-ghost btn-sm" onclick="authorizeGCal()"
+            title="Connect Google Calendar">🔑 Login</button>
           <button class="btn btn-ghost btn-sm" onclick="showNotifications()">🔔</button>
           <button class="btn btn-primary btn-sm" onclick="openAddTask()">+ Add Task</button>
           <div class="toggle-theme" onclick="toggleTheme()" title="Toggle theme" id="theme-toggle"></div>
