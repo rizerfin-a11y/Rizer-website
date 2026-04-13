@@ -49,9 +49,26 @@ function initGCal() {
       if (response.access_token) {
         state.gcalToken = response.access_token;
         state.gcalConnected = true;
+        state.isGuest = false; // User is now authenticated
+
+        // Start 24hr session if not already started
+        if (!state.sessionStartTime) {
+          state.sessionStartTime = Date.now();
+        }
+
         save();
-        notify('Google Calendar Authorized! ✅', 'success');
-        renderPage();
+        notify('Success! Welcome to Rizer ✨', 'success');
+
+        // Close modal if open and refresh
+        closeModal();
+
+        // If they were on the landing page, enter the app
+        const landing = document.getElementById('landing-page');
+        if (landing && landing.style.display !== 'none') {
+          enterApp(false);
+        } else {
+          renderPage();
+        }
       }
     },
   });

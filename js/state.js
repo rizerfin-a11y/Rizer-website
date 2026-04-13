@@ -10,10 +10,13 @@ let state = {
   gcalToken: '',
   gcalId: 'primary',
   gcalClientId: '410090649050-l381juv9ftjlc5uop9ak28fivcci6g2e.apps.googleusercontent.com',
-  theme: 'dark',
+  theme: 'light',
   notifEnabled: true,
   currentPage: 'dashboard',
-  selectedDate: new Date().toISOString().split('T')[0]
+  selectedDate: new Date().toISOString().split('T')[0],
+  isGuest: false,
+  sessionStartTime: null,
+  isPremium: false
 };
 
 /** Save the entire state to localStorage */

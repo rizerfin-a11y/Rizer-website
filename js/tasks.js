@@ -200,7 +200,21 @@ function openEditTask(id) {
    SAVE / UPDATE TASK
 ────────────────────────────────────────────── */
 
+/** Helper to prevent guests from writing data */
+function checkGuest(action = 'perform this action') {
+  if (state.isGuest) {
+    if (typeof handleAddTaskClick === 'function') {
+      handleAddTaskClick();
+    } else {
+      notify('Please login to ' + action, 'warn');
+    }
+    return true;
+  }
+  return false;
+}
+
 async function saveTask(editId) {
+  if (checkGuest('save tasks')) return;
   const title = (document.getElementById('t-title') || {}).value?.trim();
   if (!title) { notify('Please enter a task title', 'warn'); return; }
 
@@ -251,6 +265,7 @@ async function saveTask(editId) {
 ────────────────────────────────────────────── */
 
 async function toggleTask(id) {
+  if (checkGuest('complete tasks')) return;
   const task = state.tasks.find(t => t.id === id);
   if (!task) return;
 
@@ -272,6 +287,7 @@ async function toggleTask(id) {
 ────────────────────────────────────────────── */
 
 async function deleteTask(id) {
+  if (checkGuest('delete tasks')) return;
   const task = state.tasks.find(t => t.id === id);
   if (task && state.gcalConnected && task.gcalEventId) {
     await deleteGCalEvent(task);
@@ -287,6 +303,7 @@ async function deleteTask(id) {
 ────────────────────────────────────────────── */
 
 function rescheduleTask(id) {
+  if (checkGuest('reschedule tasks')) return;
   const task = state.tasks.find(t => t.id === id);
   if (!task) return;
 
@@ -336,6 +353,7 @@ function openAddGoal() {
 }
 
 function saveGoal() {
+  if (checkGuest('save goals')) return;
   const title = document.getElementById('g-title')?.value.trim();
   const target = parseInt(document.getElementById('g-target')?.value);
   const period = document.getElementById('g-period')?.value;
