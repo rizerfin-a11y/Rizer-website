@@ -10,6 +10,7 @@ let state = {
   gcalToken: '',
   gcalId: 'primary',
   gcalClientId: '410090649050-l381juv9ftjlc5uop9ak28fivcci6g2e.apps.googleusercontent.com',
+  gcalApiKey: 'AIzaSyDX8G5tes9BUlZWoYS_lZ-3Nvutr5p_kHo',
   theme: 'light',
   notifEnabled: true,
   currentPage: 'dashboard',
@@ -31,8 +32,9 @@ function load() {
     try {
       const parsed = JSON.parse(raw);
       state = { ...state, ...parsed };
-      // Always use the hardcoded Client ID for the live app
+      // Always use the hardcoded credentials for the live app
       state.gcalClientId = '410090649050-l381juv9ftjlc5uop9ak28fivcci6g2e.apps.googleusercontent.com';
+      state.gcalApiKey = 'AIzaSyDX8G5tes9BUlZWoYS_lZ-3Nvutr5p_kHo';
     } catch (e) {
       console.warn('Failed to parse saved state, using defaults.');
     }
