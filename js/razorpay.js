@@ -65,7 +65,7 @@ async function handlePaymentSuccess(response, plan, amountInPaise) {
 
     try {
         // Update the subscription in Supabase directly
-        const { error } = await supabase
+        const { error } = await supabaseClient
             .from('subscriptions')
             .update({
                 paid: true,

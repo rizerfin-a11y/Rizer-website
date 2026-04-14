@@ -7,7 +7,7 @@
  * Supabase trigger auto-creates the subscription row.
  */
 async function signupUser(email, password) {
-    const { data, error } = await supabase.auth.signUp({
+    const { data, error } = await supabaseClient.auth.signUp({
         email,
         password
     });
@@ -24,7 +24,7 @@ async function signupUser(email, password) {
  * Log in an existing user.
  */
 async function loginUser(email, password) {
-    const { data, error } = await supabase.auth.signInWithPassword({
+    const { data, error } = await supabaseClient.auth.signInWithPassword({
         email,
         password
     });
@@ -45,7 +45,7 @@ async function loginWithGoogleOAuth() {
         redirectTo: window.location.origin + '/index.html'
     };
 
-    const { error } = await supabase.auth.signInWithOAuth({
+    const { error } = await supabaseClient.auth.signInWithOAuth({
         provider: 'google',
         options: options
     });
@@ -60,7 +60,7 @@ async function loginWithGoogleOAuth() {
  * Log out the current user.
  */
 async function logoutUser() {
-    await supabase.auth.signOut();
+    await supabaseClient.auth.signOut();
     // Clear local app state
     localStorage.removeItem('spp_data');
     window.location.href = 'login.html';
@@ -70,7 +70,7 @@ async function logoutUser() {
  * Get the current session (returns null if not logged in).
  */
 async function getCurrentSession() {
-    const { data: { session } } = await supabase.auth.getSession();
+    const { data: { session } } = await supabaseClient.auth.getSession();
     return session;
 }
 
@@ -78,7 +78,7 @@ async function getCurrentSession() {
  * Get the current user (returns null if not logged in).
  */
 async function getCurrentUser() {
-    const { data: { user } } = await supabase.auth.getUser();
+    const { data: { user } } = await supabaseClient.auth.getUser();
     return user;
 }
 

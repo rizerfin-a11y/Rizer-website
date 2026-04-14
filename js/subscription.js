@@ -13,7 +13,7 @@ async function fetchSubscription() {
     const user = await getCurrentUser();
     if (!user) return null;
 
-    const { data, error } = await supabase
+    const { data, error } = await supabaseClient
         .from('subscriptions')
         .select('*')
         .eq('user_id', user.id)
