@@ -113,29 +113,27 @@ function openAddTask(dateOverride) {
   </div>
 </div>
 
-<div class="form-group">
-  <label class="form-label">Task Date</label>
-  <input class="form-input" id="t-date" type="date" value="${dt}">
-</div>
-
-<div class="form-group">
-  <label class="form-label">Start Time</label>
-  <input class="form-input" id="t-start-time" type="time" value="12:00">
-</div>
-
-<div class="form-group">
-  <label class="form-label">End Time (optional)</label>
-  <input class="form-input" id="t-end-time" type="time" value="13:00">
-</div>
-
-<div class="form-group">
-  <label class="form-label">Tags (comma separated)</label>
-  <input class="form-input" id="t-tags" placeholder="work, urgent, research">
-</div>
-
-<div class="form-group">
-  <label class="form-label">Task Date</label>
-  <input class="form-input" id="t-date" type="date" value="${dt}">
+<div class="form-row">
+  <div class="form-group">
+    <label class="form-label">Task Date</label>
+    <input class="form-input" id="t-date" type="date" value="${dt}">
+  </div>
+  <div class="form-group">
+    <label class="form-label">End Time (optional)</label>
+    <div style="display:flex; gap:4px;">
+      <select class="form-select" id="t-end-h" style="flex:1; padding: 4px 8px;">
+        <option value="">None</option>
+        ${[12, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map(h => `<option value="${h}">${h}</option>`).join('')}
+      </select>
+      <select class="form-select" id="t-end-m" style="flex:1; padding: 4px 8px;">
+        ${['00', '15', '30', '45'].map(m => `<option value="${m}">${m}</option>`).join('')}
+      </select>
+      <select class="form-select" id="t-end-p" style="width:65px; padding: 4px 8px;">
+        <option value="AM">AM</option>
+        <option value="PM" selected>PM</option>
+      </select>
+    </div>
+  </div>
 </div>
 
 <div class="form-group">
@@ -148,23 +146,6 @@ function openAddTask(dateOverride) {
       ${['00', '15', '30', '45'].map(m => `<option value="${m}">${m}</option>`).join('')}
     </select>
     <select class="form-select" id="t-start-p" style="width:80px">
-      <option value="AM">AM</option>
-      <option value="PM" selected>PM</option>
-    </select>
-  </div>
-</div>
-
-<div class="form-group">
-  <label class="form-label">End Time (optional)</label>
-  <div style="display:flex; gap:8px;">
-    <select class="form-select" id="t-end-h" style="flex:1">
-      <option value="">None</option>
-      ${[12, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map(h => `<option value="${h}">${h}</option>`).join('')}
-    </select>
-    <select class="form-select" id="t-end-m" style="flex:1">
-      ${['00', '15', '30', '45'].map(m => `<option value="${m}">${m}</option>`).join('')}
-    </select>
-    <select class="form-select" id="t-end-p" style="width:80px">
       <option value="AM">AM</option>
       <option value="PM" selected>PM</option>
     </select>
@@ -222,9 +203,27 @@ function openEditTask(id) {
   </div>
 </div>
 
-<div class="form-group">
-  <label class="form-label">Task Date</label>
-  <input class="form-input" id="t-date" type="date" value="${t.date}">
+<div class="form-row">
+  <div class="form-group">
+    <label class="form-label">Task Date</label>
+    <input class="form-input" id="t-date" type="date" value="${t.date}">
+  </div>
+  <div class="form-group">
+    <label class="form-label">End Time</label>
+    <div style="display:flex; gap:4px;">
+      <select class="form-select" id="t-end-h" style="flex:1; padding: 4px 8px;">
+        <option value="" ${!t.endTime ? 'selected' : ''}>None</option>
+        ${[12, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map(h => `<option value="${h}" ${t.endTime && from24h(t.endTime.split('T')[1]).h == h ? 'selected' : ''}>${h}</option>`).join('')}
+      </select>
+      <select class="form-select" id="t-end-m" style="flex:1; padding: 4px 8px;">
+        ${['00', '15', '30', '45'].map(m => `<option value="${m}" ${t.endTime && from24h(t.endTime.split('T')[1]).m == m ? 'selected' : ''}>${m}</option>`).join('')}
+      </select>
+      <select class="form-select" id="t-end-p" style="width:65px; padding: 4px 8px;">
+        <option value="AM" ${t.endTime && from24h(t.endTime.split('T')[1]).p === 'AM' ? 'selected' : ''}>AM</option>
+        <option value="PM" ${t.endTime && from24h(t.endTime.split('T')[1]).p === 'PM' ? 'selected' : ''}>PM</option>
+      </select>
+    </div>
+  </div>
 </div>
 
 <div class="form-group">
@@ -239,23 +238,6 @@ function openEditTask(id) {
     <select class="form-select" id="t-start-p" style="width:80px">
       <option value="AM" ${from24h(t.deadline.split('T')[1]).p === 'AM' ? 'selected' : ''}>AM</option>
       <option value="PM" ${from24h(t.deadline.split('T')[1]).p === 'PM' ? 'selected' : ''}>PM</option>
-    </select>
-  </div>
-</div>
-
-<div class="form-group">
-  <label class="form-label">End Time</label>
-  <div style="display:flex; gap:8px;">
-    <select class="form-select" id="t-end-h" style="flex:1">
-      <option value="" ${!t.endTime ? 'selected' : ''}>None</option>
-      ${[12, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map(h => `<option value="${h}" ${t.endTime && from24h(t.endTime.split('T')[1]).h == h ? 'selected' : ''}>${h}</option>`).join('')}
-    </select>
-    <select class="form-select" id="t-end-m" style="flex:1">
-      ${['00', '15', '30', '45'].map(m => `<option value="${m}" ${t.endTime && from24h(t.endTime.split('T')[1]).m == m ? 'selected' : ''}>${m}</option>`).join('')}
-    </select>
-    <select class="form-select" id="t-end-p" style="width:80px">
-      <option value="AM" ${t.endTime && from24h(t.endTime.split('T')[1]).p === 'AM' ? 'selected' : ''}>AM</option>
-      <option value="PM" ${t.endTime && from24h(t.endTime.split('T')[1]).p === 'PM' ? 'selected' : ''}>PM</option>
     </select>
   </div>
 </div>
