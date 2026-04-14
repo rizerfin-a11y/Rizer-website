@@ -297,8 +297,32 @@
         return;
       }
 
+      // Listen for Auth State changes to capture provider_token immediately upon redirect
+      supabase.auth.onAuthStateChange((event, session) => {
+        if (session && session.provider_token) {
+          state.gcalToken = session.provider_token;
+          const pref = localStorage.getItem('pending_gcal_pref');
+
+          if (pref === 'true') {
+            state.gcalConnected = true;
+            state.gcalPermission = true;
+            localStorage.removeItem('pending_gcal_pref');
+          } else if (pref === 'false') {
+            state.gcalConnected = false;
+            state.gcalPermission = false;
+            localStorage.removeItem('pending_gcal_pref');
+          }
+          save();
+        }
+      });
+
       const session = await getCurrentSession();
       if (session) {
+        // Also capture token here if it was already in the session
+        if (session.provider_token && !state.gcalToken) {
+          state.gcalToken = session.provider_token;
+          save();
+        }
         // User is logged in — enforce access control
         enforceAccess();
       }

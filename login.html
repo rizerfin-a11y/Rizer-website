@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login — Rizer Productivity</title>
-    <meta name="description" content="Sign in or create your Rizer account to start your free 24-hour trial.">
+    <meta name="description" content="Sign in with Google to start your free 24-hour trial.">
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -19,7 +19,7 @@
 
 <body>
     <div class="auth-page">
-        <div class="auth-container">
+        <div class="auth-container" id="login-container">
             <div class="auth-logo">Rizer</div>
             <div class="auth-subtitle">Smart Productivity Intelligence</div>
 
@@ -27,48 +27,40 @@
                 🎁 Start your <strong>free 24-hour trial</strong> — no credit card required
             </div>
 
-            <!-- Tabs -->
-            <div class="auth-tabs">
-                <button class="auth-tab active" id="tab-signup" onclick="switchTab('signup')">Sign Up</button>
-                <button class="auth-tab" id="tab-login" onclick="switchTab('login')">Log In</button>
+            <!-- Error Message -->
+            <div class="auth-error" id="auth-error"></div>
+
+            <!-- Login Step -->
+            <div id="login-step" style="text-align: center;">
+                <button class="auth-btn"
+                    style="background: white; color: #1e293b; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 16px; font-weight: 600;"
+                    onclick="showCalendarPrompt()">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" alt="G"
+                        width="20" height="20">
+                    Continue with Google
+                </button>
             </div>
 
-            <!-- Error/Success Messages -->
-            <div class="auth-error" id="auth-error"></div>
-            <div class="auth-success" id="auth-success"></div>
+            <!-- Calendar Permission Step (Hidden initially) -->
+            <div id="calendar-step" style="display: none; text-align: center;">
+                <div style="font-size: 40px; margin-bottom: 16px;">📅</div>
+                <h3 style="margin-bottom: 12px; color: #0f172a;">Sync with Google Calendar?</h3>
+                <p style="margin-bottom: 24px; color: #64748b; font-size: 14px; line-height: 1.5;">
+                    Would you like Rizer to sync your tasks with your Google Calendar? <br>
+                    <span style="font-size: 12px;">You can change this anytime in settings.</span>
+                </p>
 
-            <!-- Signup Form -->
-            <form class="auth-form" id="signup-form" onsubmit="handleSignup(event)">
-                <div class="auth-form-group">
-                    <label class="auth-label">Email</label>
-                    <input class="auth-input" type="email" id="signup-email" placeholder="you@example.com" required>
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                    <button class="auth-btn" style="background: #6366f1; color: white;"
+                        onclick="proceedWithGoogle(true)">
+                        Yes, Sync my Calendar
+                    </button>
+                    <button class="auth-btn" style="background: #f1f5f9; color: #475569; box-shadow: none;"
+                        onclick="proceedWithGoogle(false)">
+                        No, Thanks
+                    </button>
                 </div>
-                <div class="auth-form-group">
-                    <label class="auth-label">Password</label>
-                    <input class="auth-input" type="password" id="signup-password" placeholder="Minimum 6 characters"
-                        minlength="6" required>
-                </div>
-                <div class="auth-form-group">
-                    <label class="auth-label">Confirm Password</label>
-                    <input class="auth-input" type="password" id="signup-confirm" placeholder="Repeat your password"
-                        minlength="6" required>
-                </div>
-                <button type="submit" class="auth-btn" id="signup-btn">Start Free Trial →</button>
-            </form>
-
-            <!-- Login Form -->
-            <form class="auth-form" id="login-form" style="display:none" onsubmit="handleLogin(event)">
-                <div class="auth-form-group">
-                    <label class="auth-label">Email</label>
-                    <input class="auth-input" type="email" id="login-email" placeholder="you@example.com" required>
-                </div>
-                <div class="auth-form-group">
-                    <label class="auth-label">Password</label>
-                    <input class="auth-input" type="password" id="login-password" placeholder="Enter your password"
-                        required>
-                </div>
-                <button type="submit" class="auth-btn" id="login-btn">Sign In →</button>
-            </form>
+            </div>
 
             <div class="auth-footer">
                 <p>By continuing, you agree to our
@@ -93,74 +85,17 @@
             }
         })();
 
-        function switchTab(tab) {
-            document.getElementById('auth-error').style.display = 'none';
-            document.getElementById('auth-success').style.display = 'none';
-
-            if (tab === 'signup') {
-                document.getElementById('signup-form').style.display = 'flex';
-                document.getElementById('login-form').style.display = 'none';
-                document.getElementById('tab-signup').classList.add('active');
-                document.getElementById('tab-login').classList.remove('active');
-            } else {
-                document.getElementById('signup-form').style.display = 'none';
-                document.getElementById('login-form').style.display = 'flex';
-                document.getElementById('tab-signup').classList.remove('active');
-                document.getElementById('tab-login').classList.add('active');
-            }
+        function showCalendarPrompt() {
+            document.getElementById('login-step').style.display = 'none';
+            document.getElementById('calendar-step').style.display = 'block';
         }
 
-        async function handleSignup(e) {
-            e.preventDefault();
-            const email = document.getElementById('signup-email').value.trim();
-            const password = document.getElementById('signup-password').value;
-            const confirm = document.getElementById('signup-confirm').value;
+        function proceedWithGoogle(withCalendar) {
+            // Save their preference locally so index.html knows if they connected
+            localStorage.setItem('pending_gcal_pref', withCalendar ? 'true' : 'false');
 
-            if (password !== confirm) {
-                showAuthError('Passwords do not match');
-                return;
-            }
-
-            const btn = document.getElementById('signup-btn');
-            btn.disabled = true;
-            btn.textContent = 'Creating account...';
-
-            const data = await signupUser(email, password);
-
-            if (data) {
-                // Check if email confirmation is required
-                if (data.user && !data.session) {
-                    showAuthSuccess('Account created! Check your email to confirm, then log in.');
-                    btn.disabled = false;
-                    btn.textContent = 'Start Free Trial →';
-                    switchTab('login');
-                } else {
-                    // Logged in immediately (email confirmation disabled)
-                    window.location.href = 'index.html';
-                }
-            } else {
-                btn.disabled = false;
-                btn.textContent = 'Start Free Trial →';
-            }
-        }
-
-        async function handleLogin(e) {
-            e.preventDefault();
-            const email = document.getElementById('login-email').value.trim();
-            const password = document.getElementById('login-password').value;
-
-            const btn = document.getElementById('login-btn');
-            btn.disabled = true;
-            btn.textContent = 'Signing in...';
-
-            const data = await loginUser(email, password);
-
-            if (data) {
-                window.location.href = 'index.html';
-            } else {
-                btn.disabled = false;
-                btn.textContent = 'Sign In →';
-            }
+            // Trigger Supabase Google OAuth
+            loginWithGoogleOAuth(withCalendar);
         }
     </script>
 </body>
