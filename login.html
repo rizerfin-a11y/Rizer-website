@@ -34,33 +34,13 @@
             <div id="login-step" style="text-align: center;">
                 <button class="auth-btn"
                     style="background: white; color: #1e293b; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 16px; font-weight: 600;"
-                    onclick="showCalendarPrompt()">
+                    onclick="proceedWithGoogle()">
                     <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" alt="G"
                         width="20" height="20">
                     Continue with Google
                 </button>
             </div>
 
-            <!-- Calendar Permission Step (Hidden initially) -->
-            <div id="calendar-step" style="display: none; text-align: center;">
-                <div style="font-size: 40px; margin-bottom: 16px;">📅</div>
-                <h3 style="margin-bottom: 12px; color: #0f172a;">Sync with Google Calendar?</h3>
-                <p style="margin-bottom: 24px; color: #64748b; font-size: 14px; line-height: 1.5;">
-                    Would you like Rizer to sync your tasks with your Google Calendar? <br>
-                    <span style="font-size: 12px;">You can change this anytime in settings.</span>
-                </p>
-
-                <div style="display: flex; flex-direction: column; gap: 10px;">
-                    <button class="auth-btn" style="background: #6366f1; color: white;"
-                        onclick="proceedWithGoogle(true)">
-                        Yes, Sync my Calendar
-                    </button>
-                    <button class="auth-btn" style="background: #f1f5f9; color: #475569; box-shadow: none;"
-                        onclick="proceedWithGoogle(false)">
-                        No, Thanks
-                    </button>
-                </div>
-            </div>
 
             <div class="auth-footer">
                 <p>By continuing, you agree to our
@@ -85,19 +65,12 @@
             }
         })();
 
-        function showCalendarPrompt() {
-            document.getElementById('login-step').style.display = 'none';
-            document.getElementById('calendar-step').style.display = 'block';
-        }
-
-        function proceedWithGoogle(withCalendar) {
-            // Save their preference locally so index.html knows if they connected
-            localStorage.setItem('pending_gcal_pref', withCalendar ? 'true' : 'false');
-
-            // Trigger Supabase Google OAuth
-            loginWithGoogleOAuth(withCalendar);
+        function proceedWithGoogle() {
+            // Log in with Google via Supabase OAuth
+            loginWithGoogleOAuth();
         }
     </script>
+
 </body>
 
 </html>

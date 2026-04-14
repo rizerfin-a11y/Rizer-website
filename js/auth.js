@@ -40,19 +40,10 @@ async function loginUser(email, password) {
 /**
  * Log in with Google via Supabase OAuth.
  */
-async function loginWithGoogleOAuth(withCalendar) {
+async function loginWithGoogleOAuth() {
     const options = {
         redirectTo: window.location.origin + '/index.html'
     };
-
-    if (withCalendar) {
-        options.scopes = 'https://www.googleapis.com/auth/calendar.events';
-        // Force consent prompt to ensure we get a refresh token if needed
-        options.queryParams = {
-            access_type: 'offline',
-            prompt: 'consent',
-        };
-    }
 
     const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
