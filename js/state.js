@@ -17,7 +17,8 @@ let state = {
   selectedDate: new Date().toISOString().split('T')[0],
   isGuest: false,
   sessionStartTime: null,
-  isPremium: false
+  isPremium: false,
+  gcalPermission: null // null: not asked, true: granted, false: denied
 };
 
 /** Save the entire state to localStorage */

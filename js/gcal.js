@@ -39,16 +39,21 @@ function saveGCalSettings() {
  * OAuth2 Token Flow using Google Identity Services (GIS)
  */
 let tokenClient;
-function initGCal() {
+function initGCal(withCalendar = true) {
   if (!state.gcalClientId || typeof google === 'undefined') return;
+
+  const scope = withCalendar
+    ? 'https://www.googleapis.com/auth/calendar.events email profile'
+    : 'email profile';
 
   tokenClient = google.accounts.oauth2.initTokenClient({
     client_id: state.gcalClientId,
-    scope: 'https://www.googleapis.com/auth/calendar.events',
+    scope: scope,
     callback: (response) => {
       if (response.access_token) {
         state.gcalToken = response.access_token;
-        state.gcalConnected = true;
+        state.gcalConnected = withCalendar;
+        state.gcalPermission = withCalendar;
         state.isGuest = false; // User is now authenticated
 
         // Start 24hr session if not already started
@@ -57,7 +62,7 @@ function initGCal() {
         }
 
         save();
-        notify('Success! Welcome to Rizer ✨', 'success');
+        notify(withCalendar ? 'Success! Welcome to Rizer ✨' : 'Logged in successfully! ✨', 'success');
 
         // Close modal if open and refresh
         closeModal();
@@ -74,8 +79,40 @@ function initGCal() {
   });
 }
 
-function authorizeGCal() {
-  if (!tokenClient) initGCal();
+function loginWithGoogle() {
+  // If already connected, just authorize
+  if (state.gcalConnected) {
+    authorizeGCal(true);
+    return;
+  }
+
+  // If they previously said "No" but are clicking "Login/Sync" again, 
+  // we show the modal to give them another chance to say "Yes".
+  const content = `
+    <div style="text-align:center; padding:20px;">
+      <div style="font-size:40px; margin-bottom:16px;">📅</div>
+      <h2 style="margin-bottom:12px;">Sync with Google Calendar?</h2>
+      <p style="margin-bottom:24px; color:var(--text2); line-height:1.5;">
+        Would you like Rizer to sync your tasks with your Google Calendar? <br>
+        <span style="font-size:12px; color:var(--text3);">You can always change this in settings.</span>
+      </p>
+      <div style="display:flex; flex-direction:column; gap:10px;">
+        <button class="btn btn-primary" style="width:100%" onclick="handlePermissionResponse(true)">Yes, Sync my Calendar</button>
+        <button class="btn btn-ghost" style="width:100%" onclick="handlePermissionResponse(false)">No, just log in</button>
+      </div>
+    </div>
+  `;
+  showModal(content);
+}
+
+function handlePermissionResponse(granted) {
+  state.gcalPermission = granted;
+  save();
+  authorizeGCal(granted);
+}
+
+function authorizeGCal(withCalendar = true) {
+  initGCal(withCalendar);
   if (tokenClient) {
     tokenClient.requestAccessToken({ prompt: 'consent' });
   } else {
@@ -86,6 +123,7 @@ function authorizeGCal() {
 function disconnectGCal() {
   state.gcalConnected = false;
   state.gcalToken = '';
+  state.gcalPermission = null;
   save();
   notify('Google Calendar disconnected', 'info');
   renderPage();
@@ -95,8 +133,8 @@ function disconnectGCal() {
  * Add a task as a Google Calendar event.
  */
 async function addToGCal(task) {
-  if (!state.gcalToken) {
-    if (state.gcalClientId) notify('Click "Authorize" in settings first', 'warn');
+  if (!state.gcalToken || !state.gcalPermission) {
+    if (state.gcalClientId && !state.gcalToken) notify('Click "Authorize" in settings first', 'warn');
     return;
   }
 

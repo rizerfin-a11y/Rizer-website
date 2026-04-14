@@ -50,7 +50,7 @@
         what truly matters.
       </p>
       <div class="animate-fade delay-2">
-        <button class="btn-premium btn-primary" onclick="authorizeGCal()">Start for free</button>
+        <button class="btn-premium btn-primary" onclick="loginWithGoogle()">Start for free</button>
         <button class="btn-premium btn-glass" onclick="enterApp(true)">Try as Guest</button>
       </div>
 
@@ -184,7 +184,7 @@
           <div class="streak-badge" id="top-streak">🔥 0 day streak</div>
         </div>
         <div style="display:flex;align-items:center;gap:10px">
-          <button id="gcal-top-btn" class="btn btn-ghost btn-sm" onclick="authorizeGCal()"
+          <button id="gcal-top-btn" class="btn btn-ghost btn-sm" onclick="loginWithGoogle()"
             title="Connect Google Calendar">🔑 Login</button>
           <button class="btn btn-ghost btn-sm" onclick="showNotifications()">🔔</button>
           <button class="btn btn-primary btn-sm" onclick="handleAddTaskClick()">+ Add Task</button>
@@ -258,7 +258,7 @@
           <div style="text-align:center; padding:20px;">
             <h2 style="margin-bottom:16px;">Create an account to add tasks</h2>
             <p style="margin-bottom:24px; color:var(--text-secondary);">Guests can only view features. Sign in with Google to start tracking your own productivity.</p>
-            <button class="btn-premium btn-primary" onclick="authorizeGCal()">Login with Google</button>
+            <button class="btn-premium btn-primary" onclick="loginWithGoogle()">Login with Google</button>
           </div>
         `);
       } else {

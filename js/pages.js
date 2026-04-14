@@ -28,6 +28,11 @@ function renderPage() {
   const topBtn = document.getElementById('gcal-top-btn');
   if (topBtn) {
     topBtn.style.display = state.gcalConnected ? 'none' : 'flex';
+    if (!state.gcalConnected && state.gcalToken) {
+      topBtn.textContent = '📅 Sync Calendar';
+    } else {
+      topBtn.textContent = '🔑 Login';
+    }
   }
 
   const c = document.getElementById('page-content');
@@ -100,14 +105,14 @@ function renderDashboard() {
 </h2>
 <h1 style="font-size:24px;font-weight:700;margin-bottom:24px">Your Productivity Hub</h1>
 
-${!state.gcalToken ? `
+${!state.gcalConnected ? `
 <div class="card gcal-promo" style="background: linear-gradient(135deg, #4285f4, #34a853); color: white; border: none; margin-bottom: 24px;">
   <div style="display:flex; align-items:center; justify-content: space-between; gap: 20px;">
     <div>
       <h3 style="margin-bottom: 6px;">Sync with Google Calendar</h3>
       <p style="font-size: 13px; opacity: 0.9;">Automatically add your tasks to Google Calendar and stay organized across devices.</p>
     </div>
-    <button class="btn" style="background: white; color: #4285f4; font-weight: 600;" onclick="handleAddTaskClick()">
+    <button class="btn" style="background: white; color: #4285f4; font-weight: 600;" onclick="authorizeGCal(true)">
       Connect Now
     </button>
   </div>
@@ -626,14 +631,22 @@ function renderSettings() {
   </p>
 
   ${state.gcalToken
-      ? `<div style="display:flex;align-items:center;gap:15px;margin-bottom:12px">
-         <div style="display:flex;align-items:center;gap:8px;color:var(--green);font-size:13px">
-           <div class="gcal-dot"></div> Connected
-         </div>
-         <button class="btn btn-ghost btn-sm" onclick="syncAllToGCal()">🔄 Sync All Tasks</button>
-         <button class="btn btn-danger btn-sm" onclick="disconnectGCal()">Disconnect</button>
-       </div>`
-      : `<button class="btn btn-primary btn-sm" onclick="authorizeGCal()">🔑 Sign in with Google</button>`}
+      ? (state.gcalConnected
+        ? `<div style="display:flex;align-items:center;gap:15px;margin-bottom:12px">
+             <div style="display:flex;align-items:center;gap:8px;color:var(--green);font-size:13px">
+               <div class="gcal-dot"></div> Connected
+             </div>
+             <button class="btn btn-ghost btn-sm" onclick="syncAllToGCal()">🔄 Sync All Tasks</button>
+             <button class="btn btn-danger btn-sm" onclick="disconnectGCal()">Disconnect</button>
+           </div>`
+        : `<div style="display:flex;align-items:center;gap:15px;margin-bottom:12px">
+             <div style="display:flex;align-items:center;gap:8px;color:var(--amber);font-size:13px">
+               <div class="gcal-dot" style="background:var(--amber)"></div> Sync Disabled
+             </div>
+             <button class="btn btn-primary btn-sm" onclick="authorizeGCal(true)">Enable Calendar Sync</button>
+             <button class="btn btn-danger btn-sm" onclick="disconnectGCal()">Sign Out</button>
+           </div>`)
+      : `<button class="btn btn-primary btn-sm" onclick="loginWithGoogle()">🔑 Sign in with Google</button>`}
 </div>
 
 <!-- Notifications -->

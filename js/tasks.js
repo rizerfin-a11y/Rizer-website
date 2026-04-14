@@ -11,6 +11,24 @@
  * @param {object} task  - Task object
  * @param {boolean} mini - If true, hide description and action buttons
  */
+/**
+ * Render a single task as HTML.
+ */
+function to24h(h, m, p) {
+  let hrs = parseInt(h);
+  if (p === 'PM' && hrs < 12) hrs += 12;
+  if (p === 'AM' && hrs === 12) hrs = 0;
+  return `${String(hrs).padStart(2, '0')}:${m}`;
+}
+
+function from24h(timeStr) {
+  if (!timeStr) return { h: '12', m: '00', p: 'PM' };
+  const [hrs, min] = timeStr.split(':').map(x => parseInt(x));
+  const p = hrs >= 12 ? 'PM' : 'AM';
+  const h = hrs % 12 || 12;
+  return { h: String(h), m: String(min).padStart(2, '0'), p };
+}
+
 function renderTaskItem(task, mini = false) {
   const isOverdue = !task.completed && task.deadline && task.deadline < today();
 
@@ -95,20 +113,62 @@ function openAddTask(dateOverride) {
   </div>
 </div>
 
-<div class="form-row">
-  <div class="form-group">
-    <label class="form-label">Start Time</label>
-    <input class="form-input" id="t-deadline" type="datetime-local" value="${dt}T12:00">
-  </div>
-  <div class="form-group">
-    <label class="form-label">End Time (optional)</label>
-    <input class="form-input" id="t-end" type="datetime-local" value="${dt}T13:00">
-  </div>
+<div class="form-group">
+  <label class="form-label">Task Date</label>
+  <input class="form-input" id="t-date" type="date" value="${dt}">
+</div>
+
+<div class="form-group">
+  <label class="form-label">Start Time</label>
+  <input class="form-input" id="t-start-time" type="time" value="12:00">
+</div>
+
+<div class="form-group">
+  <label class="form-label">End Time (optional)</label>
+  <input class="form-input" id="t-end-time" type="time" value="13:00">
 </div>
 
 <div class="form-group">
   <label class="form-label">Tags (comma separated)</label>
   <input class="form-input" id="t-tags" placeholder="work, urgent, research">
+</div>
+
+<div class="form-group">
+  <label class="form-label">Task Date</label>
+  <input class="form-input" id="t-date" type="date" value="${dt}">
+</div>
+
+<div class="form-group">
+  <label class="form-label">Start Time</label>
+  <div style="display:flex; gap:8px;">
+    <select class="form-select" id="t-start-h" style="flex:1">
+      ${[12, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map(h => `<option value="${h}" ${h === 12 ? 'selected' : ''}>${h}</option>`).join('')}
+    </select>
+    <select class="form-select" id="t-start-m" style="flex:1">
+      ${['00', '15', '30', '45'].map(m => `<option value="${m}">${m}</option>`).join('')}
+    </select>
+    <select class="form-select" id="t-start-p" style="width:80px">
+      <option value="AM">AM</option>
+      <option value="PM" selected>PM</option>
+    </select>
+  </div>
+</div>
+
+<div class="form-group">
+  <label class="form-label">End Time (optional)</label>
+  <div style="display:flex; gap:8px;">
+    <select class="form-select" id="t-end-h" style="flex:1">
+      <option value="">None</option>
+      ${[12, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map(h => `<option value="${h}">${h}</option>`).join('')}
+    </select>
+    <select class="form-select" id="t-end-m" style="flex:1">
+      ${['00', '15', '30', '45'].map(m => `<option value="${m}">${m}</option>`).join('')}
+    </select>
+    <select class="form-select" id="t-end-p" style="width:80px">
+      <option value="AM">AM</option>
+      <option value="PM" selected>PM</option>
+    </select>
+  </div>
 </div>
 
 ${state.gcalConnected ? `
@@ -117,7 +177,7 @@ ${state.gcalConnected ? `
   Add to Google Calendar
 </label>` : ''}
 
-<div style="display:flex;gap:10px;justify-content:flex-end">
+<div style="display:flex;gap:10px;justify-content:flex-end;margin-top:20px">
   <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
   <button class="btn btn-primary" onclick="saveTask()">Save Task</button>
 </div>`);
@@ -162,14 +222,41 @@ function openEditTask(id) {
   </div>
 </div>
 
-<div class="form-row">
-  <div class="form-group">
-    <label class="form-label">Start Time</label>
-    <input class="form-input" id="t-deadline" type="datetime-local" value="${t.deadline || (t.date + 'T12:00')}">
+<div class="form-group">
+  <label class="form-label">Task Date</label>
+  <input class="form-input" id="t-date" type="date" value="${t.date}">
+</div>
+
+<div class="form-group">
+  <label class="form-label">Start Time</label>
+  <div style="display:flex; gap:8px;">
+    <select class="form-select" id="t-start-h" style="flex:1">
+      ${[12, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map(h => `<option value="${h}" ${from24h(t.deadline.split('T')[1]).h == h ? 'selected' : ''}>${h}</option>`).join('')}
+    </select>
+    <select class="form-select" id="t-start-m" style="flex:1">
+      ${['00', '15', '30', '45'].map(m => `<option value="${m}" ${from24h(t.deadline.split('T')[1]).m == m ? 'selected' : ''}>${m}</option>`).join('')}
+    </select>
+    <select class="form-select" id="t-start-p" style="width:80px">
+      <option value="AM" ${from24h(t.deadline.split('T')[1]).p === 'AM' ? 'selected' : ''}>AM</option>
+      <option value="PM" ${from24h(t.deadline.split('T')[1]).p === 'PM' ? 'selected' : ''}>PM</option>
+    </select>
   </div>
-  <div class="form-group">
-    <label class="form-label">End Time</label>
-    <input class="form-input" id="t-end" type="datetime-local" value="${t.endTime || ''}">
+</div>
+
+<div class="form-group">
+  <label class="form-label">End Time</label>
+  <div style="display:flex; gap:8px;">
+    <select class="form-select" id="t-end-h" style="flex:1">
+      <option value="" ${!t.endTime ? 'selected' : ''}>None</option>
+      ${[12, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map(h => `<option value="${h}" ${t.endTime && from24h(t.endTime.split('T')[1]).h == h ? 'selected' : ''}>${h}</option>`).join('')}
+    </select>
+    <select class="form-select" id="t-end-m" style="flex:1">
+      ${['00', '15', '30', '45'].map(m => `<option value="${m}" ${t.endTime && from24h(t.endTime.split('T')[1]).m == m ? 'selected' : ''}>${m}</option>`).join('')}
+    </select>
+    <select class="form-select" id="t-end-p" style="width:80px">
+      <option value="AM" ${t.endTime && from24h(t.endTime.split('T')[1]).p === 'AM' ? 'selected' : ''}>AM</option>
+      <option value="PM" ${t.endTime && from24h(t.endTime.split('T')[1]).p === 'PM' ? 'selected' : ''}>PM</option>
+    </select>
   </div>
 </div>
 
@@ -226,9 +313,9 @@ async function saveTask(editId) {
     desc: document.getElementById('t-desc')?.value.trim() || '',
     priority: document.getElementById('t-priority')?.value || 'medium',
     estTime: parseInt(document.getElementById('t-time')?.value) || 0,
-    date: (document.getElementById('t-deadline')?.value || today()).split('T')[0],
-    deadline: document.getElementById('t-deadline')?.value || '',
-    endTime: document.getElementById('t-end')?.value || '',
+    date: document.getElementById('t-date')?.value || today(),
+    deadline: `${document.getElementById('t-date')?.value || today()}T${to24h(document.getElementById('t-start-h').value, document.getElementById('t-start-m').value, document.getElementById('t-start-p').value)}`,
+    endTime: document.getElementById('t-end-h').value ? `${document.getElementById('t-date')?.value || today()}T${to24h(document.getElementById('t-end-h').value, document.getElementById('t-end-m').value, document.getElementById('t-end-p').value)}` : '',
     tags: (document.getElementById('t-tags')?.value || '')
       .split(',').map(s => s.trim()).filter(Boolean),
     progress: editId ? (parseInt(document.getElementById('t-progress')?.value) || 0) : 0,
