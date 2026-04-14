@@ -15,9 +15,12 @@
   <!-- Styles -->
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/premium.css">
+  <link rel="stylesheet" href="css/paywall.css">
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
   <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 </head>
 
 <body>
@@ -50,7 +53,7 @@
         what truly matters.
       </p>
       <div class="animate-fade delay-2">
-        <button class="btn-premium btn-primary" onclick="loginWithGoogle()">Start for free</button>
+        <button class="btn-premium btn-primary" onclick="window.location.href='login.html'">Start Free Trial</button>
         <button class="btn-premium btn-glass" onclick="enterApp(true)">Try as Guest</button>
       </div>
 
@@ -127,9 +130,17 @@
     </section>
 
     <footer>
-      <p style="text-align:center; padding:40px; color:var(--text-muted); font-size:14px;">
-        © 2026 Rizer Productivity. Built for high-performers.
-      </p>
+      <div style="text-align:center; padding:40px 20px;">
+        <div style="display:flex; gap:24px; justify-content:center; margin-bottom:16px; flex-wrap:wrap;">
+          <a href="privacy.html" style="color:var(--text-muted); text-decoration:none; font-size:14px;">Privacy
+            Policy</a>
+          <a href="terms.html" style="color:var(--text-muted); text-decoration:none; font-size:14px;">Terms &
+            Conditions</a>
+          <a href="refund.html" style="color:var(--text-muted); text-decoration:none; font-size:14px;">Refund Policy</a>
+          <a href="contact.html" style="color:var(--text-muted); text-decoration:none; font-size:14px;">Contact</a>
+        </div>
+        <p style="color:var(--text-muted); font-size:13px;">© 2026 Rizer Productivity. Built for high-performers.</p>
+      </div>
     </footer>
   </div>
 
@@ -178,6 +189,11 @@
     </aside>
 
     <div class="main">
+      <!-- Trial Countdown Timer Banner -->
+      <div class="trial-timer-banner" id="trial-timer" style="display:none;">
+        <span id="trial-timer-text">⏳ Free trial ends in <strong>23:59:59</strong></span>
+      </div>
+
       <div class="topbar">
         <div style="display:flex;align-items:center;gap:12px">
           <span style="font-size:13px;color:var(--text2)" id="top-date"></span>
@@ -188,6 +204,7 @@
             title="Connect Google Calendar">🔑 Login</button>
           <button class="btn btn-ghost btn-sm" onclick="showNotifications()">🔔</button>
           <button class="btn btn-primary btn-sm" onclick="handleAddTaskClick()">+ Add Task</button>
+          <button class="btn btn-ghost btn-sm" onclick="logoutUser()" title="Sign out">🚪</button>
         </div>
       </div>
       <div class="content" id="page-content"></div>
@@ -198,6 +215,8 @@
     <div class="modal" id="modal-content"></div>
   </div>
 
+  <!-- Core App Scripts -->
+  <script src="js/supabase-config.js"></script>
   <script src="js/state.js"></script>
   <script src="js/helpers.js"></script>
   <script src="js/gcal.js"></script>
@@ -205,6 +224,13 @@
   <script src="js/pages.js"></script>
   <script src="js/charts.js"></script>
   <script src="js/app.js"></script>
+
+  <!-- Auth & Payment Scripts -->
+  <script src="js/auth.js"></script>
+  <script src="js/subscription.js"></script>
+  <script src="js/timer.js"></script>
+  <script src="js/paywall.js"></script>
+  <script src="js/razorpay.js"></script>
 
   <script>
     function enterApp(isGuest) {
@@ -222,34 +248,13 @@
     }
 
     function checkSession() {
-      if (!state.isPremium && state.sessionStartTime && !state.isGuest) {
-        const hrs24 = 24 * 60 * 60 * 1000;
-        if (Date.now() - state.sessionStartTime > hrs24) {
-          showUpgradeModal();
-        }
-      }
+      // Now handled by Supabase subscription system
+      // Kept for backwards compatibility
     }
 
     function showUpgradeModal() {
-      const content = `
-        <div style="text-align:center; padding:20px;">
-          <h2 style="margin-bottom:20px;">Your free session has ended ✨</h2>
-          <p style="margin-bottom:30px; color:var(--text-secondary);">Upgrade to continue mastering your productivity with Rizer.</p>
-          <div style="display:grid; gap:16px; grid-template-columns:1fr 1fr;">
-            <div class="card" style="padding:20px; border:2px solid var(--primary);">
-              <h3 style="margin-bottom:8px;">Standard</h3>
-              <div style="font-size:24px; font-weight:800; margin-bottom:12px;">₹50 <span style="font-size:12px; font-weight:400;">/ 3 months</span></div>
-              <button class="btn btn-primary" style="width:100%" onclick="notify('Payment integration coming soon', 'info')">Upgrade</button>
-            </div>
-            <div class="card" style="padding:20px;">
-              <h3 style="margin-bottom:8px;">Lifetime</h3>
-              <div style="font-size:24px; font-weight:800; margin-bottom:12px;">₹250 <span style="font-size:12px; font-weight:400;">/ once</span></div>
-              <button class="btn btn-ghost" style="width:100%" onclick="notify('Payment integration coming soon', 'info')">Upgrade</button>
-            </div>
-          </div>
-        </div>
-      `;
-      showModal(content);
+      // Replaced by the Supabase-powered paywall
+      showPaywall();
     }
 
     function handleAddTaskClick() {
@@ -257,8 +262,8 @@
         showModal(`
           <div style="text-align:center; padding:20px;">
             <h2 style="margin-bottom:16px;">Create an account to add tasks</h2>
-            <p style="margin-bottom:24px; color:var(--text-secondary);">Guests can only view features. Sign in with Google to start tracking your own productivity.</p>
-            <button class="btn-premium btn-primary" onclick="loginWithGoogle()">Login with Google</button>
+            <p style="margin-bottom:24px; color:var(--text-secondary);">Sign up for a free trial to start tracking your productivity.</p>
+            <button class="btn-premium btn-primary" onclick="window.location.href='login.html'">Sign Up Free</button>
           </div>
         `);
       } else {
@@ -281,6 +286,24 @@
         if (window.scrollY > 50) nav.classList.add('scrolled');
         else nav.classList.remove('scrolled');
       }
+    });
+
+    // ======= MASTER ACCESS CONTROL =======
+    // Runs when page loads. Checks Supabase auth + subscription.
+    document.addEventListener('DOMContentLoaded', async () => {
+      // Check if Supabase is loaded and configured
+      if (typeof supabase === 'undefined') {
+        console.warn('Supabase not configured, running in offline mode');
+        return;
+      }
+
+      const session = await getCurrentSession();
+      if (session) {
+        // User is logged in — enforce access control
+        enforceAccess();
+      }
+      // If not logged in, the landing page is shown normally.
+      // Guest mode still works for browsing.
     });
   </script>
 </body>

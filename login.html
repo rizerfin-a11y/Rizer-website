@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login — Rizer Productivity</title>
+    <meta name="description" content="Sign in or create your Rizer account to start your free 24-hour trial.">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/auth.css">
+</head>
+
+<body>
+    <div class="auth-page">
+        <div class="auth-container">
+            <div class="auth-logo">Rizer</div>
+            <div class="auth-subtitle">Smart Productivity Intelligence</div>
+
+            <div class="auth-trial-badge">
+                🎁 Start your <strong>free 24-hour trial</strong> — no credit card required
+            </div>
+
+            <!-- Tabs -->
+            <div class="auth-tabs">
+                <button class="auth-tab active" id="tab-signup" onclick="switchTab('signup')">Sign Up</button>
+                <button class="auth-tab" id="tab-login" onclick="switchTab('login')">Log In</button>
+            </div>
+
+            <!-- Error/Success Messages -->
+            <div class="auth-error" id="auth-error"></div>
+            <div class="auth-success" id="auth-success"></div>
+
+            <!-- Signup Form -->
+            <form class="auth-form" id="signup-form" onsubmit="handleSignup(event)">
+                <div class="auth-form-group">
+                    <label class="auth-label">Email</label>
+                    <input class="auth-input" type="email" id="signup-email" placeholder="you@example.com" required>
+                </div>
+                <div class="auth-form-group">
+                    <label class="auth-label">Password</label>
+                    <input class="auth-input" type="password" id="signup-password" placeholder="Minimum 6 characters"
+                        minlength="6" required>
+                </div>
+                <div class="auth-form-group">
+                    <label class="auth-label">Confirm Password</label>
+                    <input class="auth-input" type="password" id="signup-confirm" placeholder="Repeat your password"
+                        minlength="6" required>
+                </div>
+                <button type="submit" class="auth-btn" id="signup-btn">Start Free Trial →</button>
+            </form>
+
+            <!-- Login Form -->
+            <form class="auth-form" id="login-form" style="display:none" onsubmit="handleLogin(event)">
+                <div class="auth-form-group">
+                    <label class="auth-label">Email</label>
+                    <input class="auth-input" type="email" id="login-email" placeholder="you@example.com" required>
+                </div>
+                <div class="auth-form-group">
+                    <label class="auth-label">Password</label>
+                    <input class="auth-input" type="password" id="login-password" placeholder="Enter your password"
+                        required>
+                </div>
+                <button type="submit" class="auth-btn" id="login-btn">Sign In →</button>
+            </form>
+
+            <div class="auth-footer">
+                <p>By continuing, you agree to our
+                    <a href="terms.html">Terms</a> &
+                    <a href="privacy.html">Privacy Policy</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Supabase CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase-config.js"></script>
+    <script src="js/auth.js"></script>
+
+    <script>
+        // If already logged in, redirect to app
+        (async () => {
+            const session = await getCurrentSession();
+            if (session) {
+                window.location.href = 'index.html';
+            }
+        })();
+
+        function switchTab(tab) {
+            document.getElementById('auth-error').style.display = 'none';
+            document.getElementById('auth-success').style.display = 'none';
+
+            if (tab === 'signup') {
+                document.getElementById('signup-form').style.display = 'flex';
+                document.getElementById('login-form').style.display = 'none';
+                document.getElementById('tab-signup').classList.add('active');
+                document.getElementById('tab-login').classList.remove('active');
+            } else {
+                document.getElementById('signup-form').style.display = 'none';
+                document.getElementById('login-form').style.display = 'flex';
+                document.getElementById('tab-signup').classList.remove('active');
+                document.getElementById('tab-login').classList.add('active');
+            }
+        }
+
+        async function handleSignup(e) {
+            e.preventDefault();
+            const email = document.getElementById('signup-email').value.trim();
+            const password = document.getElementById('signup-password').value;
+            const confirm = document.getElementById('signup-confirm').value;
+
+            if (password !== confirm) {
+                showAuthError('Passwords do not match');
+                return;
+            }
+
+            const btn = document.getElementById('signup-btn');
+            btn.disabled = true;
+            btn.textContent = 'Creating account...';
+
+            const data = await signupUser(email, password);
+
+            if (data) {
+                // Check if email confirmation is required
+                if (data.user && !data.session) {
+                    showAuthSuccess('Account created! Check your email to confirm, then log in.');
+                    btn.disabled = false;
+                    btn.textContent = 'Start Free Trial →';
+                    switchTab('login');
+                } else {
+                    // Logged in immediately (email confirmation disabled)
+                    window.location.href = 'index.html';
+                }
+            } else {
+                btn.disabled = false;
+                btn.textContent = 'Start Free Trial →';
+            }
+        }
+
+        async function handleLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('login-email').value.trim();
+            const password = document.getElementById('login-password').value;
+
+            const btn = document.getElementById('login-btn');
+            btn.disabled = true;
+            btn.textContent = 'Signing in...';
+
+            const data = await loginUser(email, password);
+
+            if (data) {
+                window.location.href = 'index.html';
+            } else {
+                btn.disabled = false;
+                btn.textContent = 'Sign In →';
+            }
+        }
+    </script>
+</body>
+
+</html>

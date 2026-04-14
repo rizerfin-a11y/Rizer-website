@@ -157,6 +157,11 @@ function openAddTask(dateOverride) {
   </div>
 </div>
 
+<div class="form-group">
+  <label class="form-label">Tags (comma separated)</label>
+  <input class="form-input" id="t-tags" placeholder="work, urgent, research">
+</div>
+
 ${state.gcalConnected ? `
 <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text2);margin-bottom:14px;cursor:pointer">
   <input type="checkbox" id="t-gcal" checked>

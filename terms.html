@@ -4,63 +4,153 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Terms and Conditions - Smart Productivity Planner</title>
-    <link rel="stylesheet" href="css/style.css">
+    <title>Terms & Conditions — Rizer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
         body {
-            padding: 40px;
-            max-width: 800px;
+            font-family: 'Inter', system-ui, sans-serif;
+            background: #f8fafc;
+            color: #1e293b;
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 720px;
             margin: 0 auto;
-            line-height: 1.6;
-            background-color: #0f172a;
-            color: #f8fafc;
-        }
-
-        h1 {
-            color: #38bdf8;
-            border-bottom: 1px solid #334155;
-            padding-bottom: 20px;
-        }
-
-        h2 {
-            color: #f1f5f9;
-            margin-top: 30px;
-        }
-
-        p {
-            margin-bottom: 15px;
+            padding: 60px 24px;
         }
 
         .back-link {
-            display: inline-block;
-            margin-bottom: 20px;
-            color: #38bdf8;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: #6366f1;
             text-decoration: none;
+            font-size: 14px;
             font-weight: 500;
+            margin-bottom: 32px;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        h1 {
+            font-size: 32px;
+            font-weight: 800;
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+        }
+
+        .updated {
+            font-size: 13px;
+            color: #94a3b8;
+            margin-bottom: 32px;
+        }
+
+        h2 {
+            font-size: 20px;
+            font-weight: 700;
+            margin-top: 32px;
+            margin-bottom: 12px;
+            color: #0f172a;
+        }
+
+        p,
+        li {
+            font-size: 15px;
+            color: #475569;
+            margin-bottom: 12px;
+        }
+
+        ul {
+            padding-left: 24px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        a {
+            color: #6366f1;
         }
     </style>
 </head>
 
 <body>
-    <a href="index.html" class="back-link">← Back to App</a>
-    <h1>Terms and Conditions</h1>
-    <p>Last Updated: April 11, 2026</p>
+    <div class="container">
+        <a href="index.html" class="back-link">← Back to Rizer</a>
+        <h1>Terms & Conditions</h1>
+        <p class="updated">Last updated: April 14, 2026</p>
 
-    <h2>1. Acceptance of Terms</h2>
-    <p>By using the Smart Productivity Planner, you agree to these terms. This application is provided "as is" without
-        any warranties.</p>
+        <p>By using Rizer ("the Service"), you agree to the following terms and conditions. Please read them carefully.
+        </p>
 
-    <h2>2. User Content</h2>
-    <p>You are responsible for the tasks and data you enter. Since data is stored locally, we are not responsible for
-        any data loss occurring due to hardware failure or browser clearing.</p>
+        <h2>1. Account Registration</h2>
+        <p>To use Rizer, you must create an account with a valid email address. You are responsible for maintaining the
+            security of your account credentials.</p>
 
-    <h2>3. External Links</h2>
-    <p>Wait, this app connects to Google Services. Your use of Google Calendar is subject to Google's own terms of
-        service.</p>
+        <h2>2. Free Trial</h2>
+        <p>New users receive a <strong>24-hour free trial</strong> with full access to all features. No credit card is
+            required. After the trial period expires, you must subscribe to continue using Rizer.</p>
 
-    <h2>4. Modifications</h2>
-    <p>We reserve the right to modify these terms at any time. Your continued use of the app signifies acceptance of
-        updated terms.</p>
+        <h2>3. Subscription Plans</h2>
+        <ul>
+            <li><strong>Monthly Plan (₹299/month):</strong> Provides full access for one month from the date of payment.
+                Renews manually.</li>
+            <li><strong>Lifetime Plan (₹999 one time):</strong> Provides permanent access to all current and future
+                features.</li>
+        </ul>
+
+        <h2>4. Payments</h2>
+        <p>All payments are processed securely through <strong>Razorpay</strong>. By making a purchase, you agree to
+            Razorpay's terms of service. All prices are listed in Indian Rupees (₹) and include applicable taxes.</p>
+
+        <h2>5. Refunds</h2>
+        <p>Refunds are governed by our <a href="refund.html">Refund Policy</a>. Monthly subscriptions are refundable
+            within 7 days; lifetime purchases within 14 days.</p>
+
+        <h2>6. Acceptable Use</h2>
+        <p>You agree not to:</p>
+        <ul>
+            <li>Attempt to bypass the trial or payment system</li>
+            <li>Reverse-engineer, decompile, or modify the application</li>
+            <li>Use the service for any illegal or unauthorized purpose</li>
+            <li>Share your account with multiple users</li>
+        </ul>
+
+        <h2>7. Data Ownership</h2>
+        <p>You retain ownership of all data you create within Rizer (tasks, goals, notes). We claim no ownership over
+            your content.</p>
+
+        <h2>8. Service Availability</h2>
+        <p>We strive to maintain 99.9% uptime but do not guarantee uninterrupted service. We are not liable for any
+            losses due to service interruptions.</p>
+
+        <h2>9. Google Calendar Integration</h2>
+        <p>The Google Calendar integration is optional. By connecting Google Calendar, you authorize Rizer to create,
+            update, and delete calendar events on your behalf as described in our <a href="privacy.html">Privacy
+                Policy</a>.</p>
+
+        <h2>10. Limitation of Liability</h2>
+        <p>Rizer is provided "as is" without warranties of any kind. We are not liable for any indirect, incidental, or
+            consequential damages arising from the use of the service.</p>
+
+        <h2>11. Changes to Terms</h2>
+        <p>We may update these terms from time to time. Continued use of Rizer after changes constitutes acceptance of
+            the new terms.</p>
+
+        <h2>12. Contact</h2>
+        <p>Questions? Contact us at <a href="mailto:rohithvankayala8@gmail.com">rohithvankayala8@gmail.com</a>.</p>
+    </div>
 </body>
 
 </html>
