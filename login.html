@@ -49,6 +49,26 @@
         </div>
     </div>
 
+    <!-- Calendar Sync Prompt Modal -->
+    <div id="calendar-prompt-modal"
+        style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; backdrop-filter: blur(4px);">
+        <div
+            style="background: white; padding: 40px 32px; border-radius: 20px; max-width: 400px; width: 90%; text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; animation: scaleIn 0.2s ease-out;">
+            <div style="font-size: 48px; margin-bottom: 20px;">📅</div>
+            <h2 style="margin-bottom: 12px; font-size: 22px; font-weight: 700; color: #0f172a;">Sync Google Calendar?
+            </h2>
+            <p style="margin-bottom: 32px; color: #475569; line-height: 1.6; font-size: 15px;">
+                Would you like to sync your goals and tasks directly to your Google Calendar?
+            </p>
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+                <button class="auth-btn" style="background: #6366f1; color: white;" onclick="finalizeLogin(true)">Yes,
+                    Sync Calendar</button>
+                <button class="auth-btn" style="background: white; border: 1px solid #e2e8f0; color: #475569;"
+                    onclick="finalizeLogin(false)">No, Just Login</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Supabase CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/supabase-config.js"></script>
@@ -64,8 +84,12 @@
         })();
 
         function proceedWithGoogle() {
-            // Log in with Google via Supabase OAuth
-            loginWithGoogleOAuth();
+            document.getElementById('calendar-prompt-modal').style.display = 'flex';
+        }
+
+        function finalizeLogin(wantsCalendar) {
+            document.getElementById('calendar-prompt-modal').style.display = 'none';
+            loginWithGoogleOAuth(wantsCalendar);
         }
     </script>
 
