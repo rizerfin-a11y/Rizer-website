@@ -94,11 +94,7 @@ function isPaidUser() {
 function isTrialActive() {
     // Admin / Developer bypass
     if (currentSubscription?.email === 'rohithmech2006@gmail.com') return true;
-
-    if (!currentSubscription) return false;
-    if (currentSubscription.paid) return false; // paid users don't need trial
-    const trialEnd = new Date(currentSubscription.trial_end);
-    return new Date() < trialEnd;
+    return false; // Trial removed — all users must pay
 }
 
 /**
@@ -179,11 +175,8 @@ async function enforceAccess() {
         hideTimer();
         hidePaywall();
         enterAppFromAuth();
-    } else if (isTrialActive()) {
-        hidePaywall();
-        enterAppFromAuth();
-        startTrialTimer(currentSubscription.trial_end);
     } else {
+        // No trial — block with paywall immediately
         enterAppFromAuth();
         showPaywall();
     }

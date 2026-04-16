@@ -16,7 +16,7 @@ function showPaywall() {
     overlay.innerHTML = `
       <div class="paywall-card">
         <div class="paywall-icon">🔒</div>
-        <h1 class="paywall-title">Your Free Trial Has Ended</h1>
+        <h1 class="paywall-title">Unlock Rizer Pro</h1>
         <p class="paywall-desc">
           Upgrade to Rizer Pro to continue mastering your productivity with unlimited access to all features.
         </p>
