@@ -40,7 +40,11 @@ async function loginUser(email, password) {
 /**
  * Log in with Google via Supabase OAuth.
  */
-async function loginWithGoogleOAuth() {
+async function loginWithGoogleOAuth(requestCalendar = true) {
+    const scopes = requestCalendar
+        ? 'https://www.googleapis.com/auth/calendar.events https://www.googleapis.com/auth/calendar.readonly'
+        : 'email profile';
+
     const { error } = await supabaseClient.auth.signInWithOAuth({
         provider: 'google',
         options: {
@@ -49,7 +53,7 @@ async function loginWithGoogleOAuth() {
                 access_type: 'offline',
                 prompt: 'consent'
             },
-            scopes: 'https://www.googleapis.com/auth/calendar.events https://www.googleapis.com/auth/calendar.readonly'
+            scopes: scopes
         }
     });
 

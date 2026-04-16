@@ -39,11 +39,20 @@ function saveGCalSettings() {
  * Unify login with Supabase Google OAuth
  */
 function loginWithGoogle() {
-  if (typeof loginWithGoogleOAuth === 'function') {
-    loginWithGoogleOAuth();
-  } else {
-    notify('Auth system not ready', 'danger');
-  }
+  const content = `
+    <div style="text-align:center; padding:20px;">
+      <div style="font-size:40px; margin-bottom:16px;">🔑</div>
+      <h2 style="margin-bottom:12px;">Sign in with Google</h2>
+      <p style="margin-bottom:24px; color:var(--text2); line-height:1.5;">
+        Would you like to sync your tasks with <strong>Google Calendar</strong>?
+      </p>
+      <div style="display:flex; flex-direction:column; gap:10px;">
+        <button class="btn btn-primary" style="width:100%" onclick="loginWithGoogleOAuth(true)">Yes, Sync & Login</button>
+        <button class="btn btn-ghost" style="width:100%" onclick="loginWithGoogleOAuth(false)">No, just Login</button>
+      </div>
+    </div>
+  `;
+  showModal(content);
 }
 
 function disconnectGCal() {
