@@ -13,12 +13,22 @@ async function fetchSubscription() {
     const user = await getCurrentUser();
     if (!user) return null;
 
-    // 1. Try to fetch existing subscription
+    // 1. Try to fetch existing subscription (Check both ID and Email for safety)
     const { data, error } = await supabaseClient
         .from('subscriptions')
         .select('*')
-        .eq('user_id', user.id)
-        .maybeSingle(); // Use maybeSingle to avoid error on 0 rows
+        .or(`user_id.eq."${user.id}",email.eq."${user.email}"`)
+        .order('paid', { ascending: false }) // Prioritize paid rows
+        .limit(1)
+        .maybeSingle();
+
+    // 1b. If found by email but user_id is missing, link it now
+    if (data && !data.user_id) {
+        await supabaseClient
+            .from('subscriptions')
+            .update({ user_id: user.id })
+            .eq('id', data.id);
+    }// Use maybeSingle to avoid error on 0 rows
 
     if (error) {
         console.error('Failed to fetch subscription:', error.message);
