@@ -13,15 +13,42 @@ async function fetchSubscription() {
     const user = await getCurrentUser();
     if (!user) return null;
 
+    // 1. Try to fetch existing subscription
     const { data, error } = await supabaseClient
         .from('subscriptions')
         .select('*')
         .eq('user_id', user.id)
-        .single();
+        .maybeSingle(); // Use maybeSingle to avoid error on 0 rows
 
     if (error) {
         console.error('Failed to fetch subscription:', error.message);
         return null;
+    }
+
+    // 2. If no subscription found, create one (Initial signup)
+    if (!data) {
+        console.log('No subscription found, creating new one for user:', user.id);
+        const trialDuration = 24 * 60 * 60 * 1000; // 24 hours
+        const newSub = {
+            user_id: user.id,
+            email: user.email,
+            paid: false,
+            trial_end: new Date(Date.now() + trialDuration).toISOString(),
+            created_at: new Date().toISOString()
+        };
+
+        const { data: createdData, error: createError } = await supabaseClient
+            .from('subscriptions')
+            .insert(newSub)
+            .select()
+            .single();
+
+        if (createError) {
+            console.error('Failed to create initial subscription:', createError.message);
+            return null;
+        }
+        currentSubscription = createdData;
+        return createdData;
     }
 
     currentSubscription = data;
@@ -32,7 +59,17 @@ async function fetchSubscription() {
  * Check if the user has paid (lifetime or monthly).
  */
 function isPaidUser() {
-    return currentSubscription?.paid === true;
+    if (!currentSubscription || currentSubscription.paid !== true) return false;
+
+    // If it's a monthly plan, check if it has expired
+    if (currentSubscription.plan === 'monthly' && currentSubscription.expires_at) {
+        const expiryDate = new Date(currentSubscription.expires_at);
+        if (new Date() > expiryDate) {
+            return false; // Subscription expired
+        }
+    }
+
+    return true; // Active lifetime or active monthly
 }
 
 /**

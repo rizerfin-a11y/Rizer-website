@@ -77,6 +77,9 @@ serve(async (req: Request) => {
             paid: true,
             paid_at: new Date().toISOString(),
             plan: plan,
+            expires_at: plan === 'monthly'
+                ? new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
+                : null,
             razorpay_payment_id: payment.id,
             razorpay_order_id: payment.order_id || null,
             amount_paid: payment.amount

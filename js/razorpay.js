@@ -71,6 +71,9 @@ async function handlePaymentSuccess(response, plan, amountInPaise) {
                 paid: true,
                 paid_at: new Date().toISOString(),
                 plan: plan,
+                expires_at: plan === 'monthly'
+                    ? new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
+                    : null,
                 razorpay_payment_id: response.razorpay_payment_id || null,
                 razorpay_order_id: response.razorpay_order_id || null,
                 amount_paid: amountInPaise
