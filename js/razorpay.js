@@ -64,25 +64,38 @@ async function handlePaymentSuccess(response, plan, amountInPaise) {
     if (!user) return;
 
     try {
-        // Update the subscription in Supabase directly
-        const { error } = await supabaseClient
+        const updateData = {
+            paid: true,
+            paid_at: new Date().toISOString(),
+            plan: plan,
+            expires_at: plan === 'monthly'
+                ? new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
+                : null,
+            razorpay_payment_id: response.razorpay_payment_id || null,
+            razorpay_order_id: response.razorpay_order_id || null,
+            amount_paid: amountInPaise
+        };
+
+        // Try to update existing row
+        let { error } = await supabaseClient
             .from('subscriptions')
-            .update({
-                paid: true,
-                paid_at: new Date().toISOString(),
-                plan: plan,
-                expires_at: plan === 'monthly'
-                    ? new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
-                    : null,
-                razorpay_payment_id: response.razorpay_payment_id || null,
-                razorpay_order_id: response.razorpay_order_id || null,
-                amount_paid: amountInPaise
-            })
+            .update(updateData)
             .eq('user_id', user.id);
 
         if (error) {
-            console.error('Failed to update subscription:', error);
-            // Still try to proceed — the webhook will handle it as backup
+            console.warn('Update failed, trying upsert...', error);
+            // If update fails, try upserting with email as fallback
+            const { error: upsertError } = await supabaseClient
+                .from('subscriptions')
+                .upsert({ user_id: user.id, email: user.email, ...updateData }, { onConflict: 'user_id' });
+            error = upsertError;
+        }
+
+        if (error) {
+            console.error('Final database update failed:', error);
+        } else {
+            // Success! Store a local proof as backup for the next few minutes
+            localStorage.setItem(`rizer_temp_paid_${user.id}`, Date.now() + (10 * 60 * 1000));
         }
 
         // Refresh subscription data

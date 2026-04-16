@@ -75,6 +75,10 @@ function isPaidUser() {
     // Admin / Developer bypass
     if (currentSubscription?.email === 'rohithmech2006@gmail.com') return true;
 
+    // Check local storage payment proof (temp backup)
+    const localProof = localStorage.getItem(`rizer_temp_paid_${currentSubscription?.user_id}`);
+    if (localProof && Date.now() < parseInt(localProof)) return true;
+
     if (!currentSubscription || currentSubscription.paid !== true) return false;
 
     // If it's a monthly plan, check if it has expired
