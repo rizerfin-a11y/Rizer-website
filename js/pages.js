@@ -112,7 +112,7 @@ ${!state.gcalConnected ? `
       <h3 style="margin-bottom: 6px;">Sync with Google Calendar</h3>
       <p style="font-size: 13px; opacity: 0.9;">Automatically add your tasks to Google Calendar and stay organized across devices.</p>
     </div>
-    <button class="btn" style="background: white; color: #4285f4; font-weight: 600;" onclick="authorizeGCal(true)">
+    <button class="btn" style="background: white; color: #4285f4; font-weight: 600;" onclick="loginWithGoogle()">
       Connect Now
     </button>
   </div>
@@ -643,7 +643,7 @@ function renderSettings() {
              <div style="display:flex;align-items:center;gap:8px;color:var(--amber);font-size:13px">
                <div class="gcal-dot" style="background:var(--amber)"></div> Sync Disabled
              </div>
-             <button class="btn btn-primary btn-sm" onclick="authorizeGCal(true)">Enable Calendar Sync</button>
+             <button class="btn btn-primary btn-sm" onclick="loginWithGoogle()">Enable Calendar Sync</button>
              <button class="btn btn-danger btn-sm" onclick="disconnectGCal()">Sign Out</button>
            </div>`)
       : `<button class="btn btn-primary btn-sm" onclick="loginWithGoogle()">🔑 Sign in with Google</button>`}

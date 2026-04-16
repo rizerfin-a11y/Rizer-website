@@ -41,13 +41,16 @@ async function loginUser(email, password) {
  * Log in with Google via Supabase OAuth.
  */
 async function loginWithGoogleOAuth() {
-    const options = {
-        redirectTo: window.location.origin + '/index.html'
-    };
-
     const { error } = await supabaseClient.auth.signInWithOAuth({
         provider: 'google',
-        options: options
+        options: {
+            redirectTo: window.location.origin + '/index.html',
+            queryParams: {
+                access_type: 'offline',
+                prompt: 'consent'
+            },
+            scopes: 'https://www.googleapis.com/auth/calendar.events https://www.googleapis.com/auth/calendar.readonly'
+        }
     });
 
     if (error) {

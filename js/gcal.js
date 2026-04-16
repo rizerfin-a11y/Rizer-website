@@ -36,87 +36,13 @@ function saveGCalSettings() {
 }
 
 /** 
- * OAuth2 Token Flow using Google Identity Services (GIS)
+ * Unify login with Supabase Google OAuth
  */
-let tokenClient;
-function initGCal(withCalendar = true) {
-  if (!state.gcalClientId || typeof google === 'undefined') return;
-
-  const scope = withCalendar
-    ? 'https://www.googleapis.com/auth/calendar.events email profile'
-    : 'email profile';
-
-  tokenClient = google.accounts.oauth2.initTokenClient({
-    client_id: state.gcalClientId,
-    scope: scope,
-    callback: (response) => {
-      if (response.access_token) {
-        state.gcalToken = response.access_token;
-        state.gcalConnected = withCalendar;
-        state.gcalPermission = withCalendar;
-        state.isGuest = false; // User is now authenticated
-
-        // Start 24hr session if not already started
-        if (!state.sessionStartTime) {
-          state.sessionStartTime = Date.now();
-        }
-
-        save();
-        notify(withCalendar ? 'Success! Welcome to Rizer ✨' : 'Logged in successfully! ✨', 'success');
-
-        // Close modal if open and refresh
-        closeModal();
-
-        // If they were on the landing page, enter the app
-        const landing = document.getElementById('landing-page');
-        if (landing && landing.style.display !== 'none') {
-          enterApp(false);
-        } else {
-          renderPage();
-        }
-      }
-    },
-  });
-}
-
 function loginWithGoogle() {
-  // If already connected, just authorize
-  if (state.gcalConnected) {
-    authorizeGCal(true);
-    return;
-  }
-
-  // If they previously said "No" but are clicking "Login/Sync" again, 
-  // we show the modal to give them another chance to say "Yes".
-  const content = `
-    <div style="text-align:center; padding:20px;">
-      <div style="font-size:40px; margin-bottom:16px;">📅</div>
-      <h2 style="margin-bottom:12px;">Sync with Google Calendar?</h2>
-      <p style="margin-bottom:24px; color:var(--text2); line-height:1.5;">
-        Would you like Rizer to sync your tasks with your Google Calendar? <br>
-        <span style="font-size:12px; color:var(--text3);">You can always change this in settings.</span>
-      </p>
-      <div style="display:flex; flex-direction:column; gap:10px;">
-        <button class="btn btn-primary" style="width:100%" onclick="handlePermissionResponse(true)">Yes, Sync my Calendar</button>
-        <button class="btn btn-ghost" style="width:100%" onclick="handlePermissionResponse(false)">No, just log in</button>
-      </div>
-    </div>
-  `;
-  showModal(content);
-}
-
-function handlePermissionResponse(granted) {
-  state.gcalPermission = granted;
-  save();
-  authorizeGCal(granted);
-}
-
-function authorizeGCal(withCalendar = true) {
-  initGCal(withCalendar);
-  if (tokenClient) {
-    tokenClient.requestAccessToken({ prompt: 'consent' });
+  if (typeof loginWithGoogleOAuth === 'function') {
+    loginWithGoogleOAuth();
   } else {
-    notify('Identity Client not ready. Check Client ID.', 'danger');
+    notify('Auth system not ready', 'danger');
   }
 }
 

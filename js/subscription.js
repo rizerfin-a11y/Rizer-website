@@ -52,6 +52,14 @@ async function fetchSubscription() {
     }
 
     currentSubscription = data;
+
+    // Sync GCal token to local state
+    if (data.gcal_token) {
+        state.gcalToken = data.gcal_token;
+        state.gcalConnected = true;
+        state.gcalPermission = true;
+    }
+
     return data;
 }
 
@@ -121,7 +129,26 @@ async function enforceAccess() {
     }
 
     // 2. Fetch subscription
-    const sub = await fetchSubscription();
+    let sub = await fetchSubscription();
+
+    // 2b. If we have a provider_token in the current session, save it to the subscription
+    if (session.provider_token) {
+        console.log('Found Google Provider Token, saving to Supabase...');
+        const { error: updateError } = await supabaseClient
+            .from('subscriptions')
+            .update({ gcal_token: session.provider_token })
+            .eq('user_id', session.user.id);
+
+        if (!updateError) {
+            // Update local copy too
+            if (sub) sub.gcal_token = session.provider_token;
+            state.gcalToken = session.provider_token;
+            state.gcalConnected = true;
+            state.gcalPermission = true;
+            save();
+        }
+    }
+
     if (!sub) {
         // Edge case: subscription row not created yet, wait and retry
         await new Promise(r => setTimeout(r, 1500));
