@@ -299,14 +299,7 @@
 
       const session = await getCurrentSession();
       if (session) {
-        // If they haven't explicitly set calendar permission, prompt them now!
-        if (state.gcalPermission === null) {
-          setTimeout(() => {
-            if (typeof loginWithGoogle === 'function') {
-              loginWithGoogle();
-            }
-          }, 1500);
-        }
+
 
         // User is logged in — enforce access control
         enforceAccess();

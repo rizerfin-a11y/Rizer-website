@@ -67,6 +67,9 @@ async function fetchSubscription() {
  * Check if the user has paid (lifetime or monthly).
  */
 function isPaidUser() {
+    // Admin / Developer bypass
+    if (currentSubscription?.email === 'rohithmech2006@gmail.com') return true;
+
     if (!currentSubscription || currentSubscription.paid !== true) return false;
 
     // If it's a monthly plan, check if it has expired
@@ -84,6 +87,9 @@ function isPaidUser() {
  * Check if the trial is still active.
  */
 function isTrialActive() {
+    // Admin / Developer bypass
+    if (currentSubscription?.email === 'rohithmech2006@gmail.com') return true;
+
     if (!currentSubscription) return false;
     if (currentSubscription.paid) return false; // paid users don't need trial
     const trialEnd = new Date(currentSubscription.trial_end);
