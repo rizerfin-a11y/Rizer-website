@@ -28,12 +28,17 @@ async function fetchSubscription() {
     // 2. If no subscription found, create one (Initial signup)
     if (!data) {
         console.log('No subscription found, creating new one for user:', user.id);
+
+        // Use the actual account creation time from Supabase Auth for the trial
+        const signupTime = new Date(user.created_at).getTime();
         const trialDuration = 24 * 60 * 60 * 1000; // 24 hours
+        const trialEnd = new Date(signupTime + trialDuration);
+
         const newSub = {
             user_id: user.id,
             email: user.email,
             paid: false,
-            trial_end: new Date(Date.now() + trialDuration).toISOString(),
+            trial_end: trialEnd.toISOString(),
             created_at: new Date().toISOString()
         };
 
