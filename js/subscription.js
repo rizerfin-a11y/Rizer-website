@@ -164,9 +164,10 @@ async function enforceAccess() {
     }
 
     if (!sub) {
-        // Fallback: if DB failed, grant temporary trial so they aren't blocked
-        console.warn('Using local fallback for trial');
+        // No subscription found and no trial allowed — show paywall
+        console.warn('No subscription found, showing paywall');
         enterAppFromAuth();
+        showPaywall();
         return;
     }
 
