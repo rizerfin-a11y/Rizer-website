@@ -7,7 +7,7 @@ const RAZORPAY_KEY_ID = 'rzp_live_SdMavU5oQ8bpSJ';
 /**
  * Initiate a Razorpay payment.
  * @param {string} plan - 'monthly' or 'lifetime'
- * @param {number} amountInPaise - Amount in paise (₹299 = 29900)
+ * @param {number} amountInPaise - Amount in paise (₹1 = 100)
  */
 async function initiatePayment(plan, amountInPaise) {
     const user = await getCurrentUser();
